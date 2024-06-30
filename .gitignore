@@ -1,0 +1,8 @@
+# Ignore Python virtual environment
+venv/
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+# Ignore Keras model files (assuming they are .h5 or .hdf5)
+*.h5
+*.hdf5
+*.Keras
