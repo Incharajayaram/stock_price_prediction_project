@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from keras.models import load_model
+from keras.models import load_model # type: ignore
 import matplotlib.pyplot as plt
 import yfinance as yf
 
