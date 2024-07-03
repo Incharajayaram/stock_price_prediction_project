@@ -79,3 +79,28 @@ fig = plt.figure(figsize=(15,6))
 plt.plot(pd.concat([google_data.Close[:splitting_len+100],ploting_data], axis=0))
 plt.legend(["Data- not used", "Original Test data", "Predicted Test data"])
 st.pyplot(fig)
+
+st.subheader("Future Close Price values")
+
+def predict_future_stock(no_of_days, prev_100):
+    future_predictions = []
+    prev_100 = scaler.fit_transform(prev_100['Adj Close'].values.reshape(-1,1)).reshape(1,-1,1)
+    for _ in range(no_of_days):
+        next_day = model.predict(prev_100)[0, 0]  
+        future_predictions.append(next_day)
+        prev_100 = np.append(prev_100[:, 1:, :], [[[next_day]]], axis=1)  
+    return scaler.inverse_transform(np.array(future_predictions).reshape(-1, 1)).flatten()
+
+no_of_days = int(st.text_input("Enter the number of days to be predicted from current date : ", "10"))  
+future_results = predict_future_stock(no_of_days, prev_100= google_data[['Adj Close']].tail(100))
+print(future_results)
+
+future_results = np.array(future_results).reshape(-1,1)
+fig = plt.figure(figsize = (15,5))
+plt.plot(pd.DataFrame(future_results), marker = 'o')
+for i in range(len(future_results)):
+    plt.text(i, future_results[i], int(future_results[i][0]))
+plt.xlabel('Future days')
+plt.ylabel('Close Price')
+plt.title("Future Close price of stock")
+st.pyplot(fig)
