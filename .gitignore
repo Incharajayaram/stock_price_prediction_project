@@ -2,3 +2,4 @@
 venv/
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
+.vercel
