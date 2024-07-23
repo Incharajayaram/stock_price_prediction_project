@@ -3,8 +3,9 @@ import pandas as pd
 import numpy as np
 from keras.models import load_model # type: ignore
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 import yfinance as yf
-from datetime import timedelta, date
+from datetime import timedelta, datetime
 
 def online_learning(model, new_data, scaler):
     scaled_new_data = scaler.transform(new_data)
@@ -32,9 +33,8 @@ def update_data_and_model(stock, model, scaler, last_100_days):
     
     return last_100_days
 
-st.title("Stock Price Predictor App")
-
-stock = st.text_input("Enter the Stock ID", "GOOG")
+st.markdown("<h2 style='text-align: left; color: white;'>Enter the Stock ID</h2>", unsafe_allow_html=True)
+stock = st.text_input("", "GOOG")
 
 from datetime import datetime
 end = datetime.now()
@@ -42,9 +42,40 @@ start = datetime(end.year-20,end.month,end.day)
 
 google_data = yf.download(stock, start, end)
 
-model = load_model(r"C:\Users\incha\stock_price_prediction_project\Latest_stcok_price_model.keras")
 st.subheader("Stock Data")
 st.write(google_data)
+
+model = load_model(r"C:\Users\incha\stock_price_prediction_project\Latest_stcok_price_model.keras")
+
+
+def online_learning(model, new_data, scaler):
+    scaled_new_data = scaler.transform(new_data)
+    x_new = scaled_new_data[:-1].reshape(1, -1, 1)
+    y_new = scaled_new_data[-1].reshape(1, 1)
+    
+    prediction = model.predict(x_new)
+    
+    model.fit(x_new, y_new, epochs=1, verbose=0)
+    
+    return scaler.inverse_transform(prediction)[0][0]
+
+def update_data_and_model(stock, model, scaler, last_100_days):
+    end = datetime.now()
+    start = end - timedelta(days=1)
+    new_data = yf.download(stock, start, end)
+    
+    if not new_data.empty:
+        new_close = new_data['Adj Close'].values[-1]
+        last_100_days = np.append(last_100_days[1:], new_close)
+        
+        predicted_price = online_learning(model, last_100_days.reshape(-1, 1), scaler)
+        
+        st.write(f"New data point: {new_close}")
+        st.write(f"Predicted next price: {predicted_price}")
+    
+    return last_100_days
+
+
 
 splitting_len = int(len(google_data)*0.7)
 x_test = pd.DataFrame(google_data.Close[splitting_len:])
