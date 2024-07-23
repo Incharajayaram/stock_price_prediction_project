@@ -1,5 +1,6 @@
 # Ignore Python virtual environment
-venv/
+myenv/
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
 .vercel
+
