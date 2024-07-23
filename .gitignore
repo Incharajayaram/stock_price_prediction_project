@@ -3,4 +3,4 @@ myenv/
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
 .vercel
-
+.github/
