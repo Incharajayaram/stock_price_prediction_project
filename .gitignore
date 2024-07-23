@@ -4,5 +4,4 @@ myenv/
 .ipynb_checkpoints/
 .vercel
 .github/
-#.keras file
-*.keras
+*.ipynb
